@@ -1,0 +1,117 @@
+<script>
+  function mostrarAlerta(mensaje, tipo) {
+    const alerta = document.getElementById('mensajeAlerta');
+    if (!alerta) return;
+    alerta.textContent = mensaje;
+    alerta.className = 'alert ' + (tipo === 'success' ? 'alert-success' : 'alert-error');
+    alerta.classList.remove('hidden');
+  }
+
+  function ocultarAlerta() {
+    const alerta = document.getElementById('mensajeAlerta');
+    if (alerta) alerta.classList.add('hidden');
+  }
+
+  function buscarReferencia() {
+    const ref = document.getElementById('inputReferencia').value.trim();
+    if (!ref) {
+      mostrarAlerta('Por favor ingresa un número de referencia.', 'error');
+      return;
+    }
+
+    ocultarAlerta();
+    document.getElementById('btnBuscar').textContent = 'Buscando...';
+    document.getElementById('btnBuscar').disabled = true;
+
+    google.script.run
+      .withSuccessHandler(function(res) {
+        document.getElementById('btnBuscar').textContent = 'Buscar';
+        document.getElementById('btnBuscar').disabled = false;
+
+        if (res.exito) {
+          document.getElementById('numFila').value = res.numFila;
+          document.getElementById('lblReferencia').textContent = res.referencia;
+          document.getElementById('lblDescripcion').textContent = res.descripcion;
+          document.getElementById('lblGrupo').textContent = res.grupo;
+          document.getElementById('lblFEntrega').textContent = res.fEntregaIdeal;
+
+          document.getElementById('fEnvioCliente').value = res.fEnvioCliente;
+          document.getElementById('fAprobadaCliente').value = res.fAprobadaCliente;
+          document.getElementById('fRoperoFinal').value = res.fRoperoFinal;
+          document.getElementById('estadoMuestras').value = res.estadoMuestras || 'APROBADA';
+          document.getElementById('patronista').value = res.patronista;
+          document.getElementById('fInicioMolderia').value = res.fInicioMolderia;
+          document.getElementById('llevaPlantillasConfeccion').checked = res.llevaPlantillasConfeccion;
+          document.getElementById('llevaPlantillasProcesos').checked = res.llevaPlantillasProcesos;
+          document.getElementById('fFinMolderia').value = res.fFinMolderia;
+          document.getElementById('observaciones').value = res.observaciones;
+
+          document.getElementById('seccionFormulario').classList.remove('hidden');
+          ocultarAlerta();
+        } else {
+          mostrarAlerta(res.mensaje, 'error');
+          document.getElementById('seccionFormulario').classList.add('hidden');
+        }
+      })
+      .withFailureHandler(function(err) {
+        document.getElementById('btnBuscar').textContent = 'Buscar';
+        document.getElementById('btnBuscar').disabled = false;
+        mostrarAlerta('Error de conexión: ' + err.message, 'error');
+      })
+      .buscarReferencia(ref);
+  }
+
+  function guardarCambios(event) {
+    event.preventDefault();
+    
+    const btnGuardar = document.getElementById('btnGuardar');
+    btnGuardar.textContent = 'Guardando cambios...';
+    btnGuardar.disabled = true;
+
+    const datos = {
+      numFila: document.getElementById('numFila').value,
+      referencia: document.getElementById('lblReferencia').textContent,
+      fEnvioCliente: document.getElementById('fEnvioCliente').value,
+      fAprobadaCliente: document.getElementById('fAprobadaCliente').value,
+      fRoperoFinal: document.getElementById('fRoperoFinal').value,
+      estadoMuestras: document.getElementById('estadoMuestras').value,
+      patronista: document.getElementById('patronista').value,
+      fInicioMolderia: document.getElementById('fInicioMolderia').value,
+      llevaPlantillasConfeccion: document.getElementById('llevaPlantillasConfeccion').checked,
+      llevaPlantillasProcesos: document.getElementById('llevaPlantillasProcesos').checked,
+      fFinMolderia: document.getElementById('fFinMolderia').value,
+      observaciones: document.getElementById('observaciones').value
+    };
+
+    google.script.run
+      .withSuccessHandler(function(res) {
+        btnGuardar.textContent = 'Guardar Cambios';
+        btnGuardar.disabled = false;
+
+        if (res.exito) {
+          // Muestra el mensaje verde de éxito en pantalla
+          mostrarAlerta(res.mensaje, 'success');
+          
+          // Espera 2 segundos mostrando el mensaje antes de limpiar y regresar al buscador
+          setTimeout(function() {
+            resetearVista();
+          }, 2000);
+        } else {
+          mostrarAlerta(res.mensaje, 'error');
+        }
+      })
+      .withFailureHandler(function(err) {
+        btnGuardar.textContent = 'Guardar Cambios';
+        btnGuardar.disabled = false;
+        mostrarAlerta('Error al guardar: ' + err.message, 'error');
+      })
+      .actualizarReferencia(datos);
+  }
+
+  function resetearVista() {
+    document.getElementById('seccionFormulario').classList.add('hidden');
+    document.getElementById('inputReferencia').value = '';
+    ocultarAlerta();
+    document.getElementById('inputReferencia').focus();
+  }
+</script>

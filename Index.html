@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portal de Moldería</title>
+  <?!= include('Estilos.css'); ?>
+</head>
+<body>
+  <div class="container">
+    <h2>Portal de Búsqueda y Actualización de Moldería</h2>
+    
+    <!-- Buscador -->
+    <div class="search-box">
+      <input type="text" id="inputReferencia" placeholder="Ingresa número de referencia (Ej: 56685)">
+      <button id="btnBuscar" onclick="buscarReferencia()">Buscar</button>
+    </div>
+
+    <!-- Sección de Visualización y Formulario -->
+    <div id="seccionFormulario" class="hidden">
+      <div class="info-card">
+        <h3>Información de la Prenda</h3>
+        <p><strong>Referencia:</strong> <span id="lblReferencia"></span></p>
+        <p><strong>Descripción:</strong> <span id="lblDescripcion"></span></p>
+        <p><strong>Grupo:</strong> <span id="lblGrupo"></span></p>
+        <p><strong>F. Entrega Ideal Moldería:</strong> <span id="lblFEntrega"></span></p>
+      </div>
+
+      <form id="formMolderia" onsubmit="guardarCambios(event)">
+        <input type="hidden" id="numFila">
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Fecha envío muestra cliente:</label>
+            <input type="date" id="fEnvioCliente">
+          </div>
+          <div class="form-group">
+            <label>F. muestra aprobada x cliente:</label>
+            <input type="date" id="fAprobadaCliente">
+          </div>
+          <div class="form-group">
+            <label>F. ropero final:</label>
+            <input type="date" id="fRoperoFinal">
+          </div>
+          <div class="form-group">
+            <label>Estado muestras para liberar molde:</label>
+            <select id="estadoMuestras">
+              <option value="APROBADA">APROBADA</option>
+              <option value="PTE CLIENTE">PTE CLIENTE</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Patronista asignada:</label>
+            <select id="patronista">
+              <option value="">Seleccione...</option>
+              <option value="ANDREA PALACIO">ANDREA PALACIO</option>
+              <option value="DEISY CANO">DEISY CANO</option>
+              <option value="JUAN CARLOS MESA">JUAN CARLOS MESA</option>
+              <option value="JULIANA GUTIERREZ">JULIANA GUTIERREZ</option>
+              <option value="LUISA">LUISA</option>
+              <option value="YAZMIN">YAZMIN</option>
+              <option value="MIA">MIA</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fecha real inicio moldería:</label>
+            <input type="date" id="fInicioMolderia">
+          </div>
+          <div class="form-group checkbox-group">
+            <label><input type="checkbox" id="llevaPlantillasConfeccion"> Lleva plantillas confección</label>
+          </div>
+          <div class="form-group checkbox-group">
+            <label><input type="checkbox" id="llevaPlantillasProcesos"> Lleva plantillas procesos</label>
+          </div>
+          <div class="form-group">
+            <label>Fecha real fin moldería:</label>
+            <input type="date" id="fFinMolderia">
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Observaciones:</label>
+          <textarea id="observaciones" rows="3"></textarea>
+        </div>
+
+        <!-- MENSAJE DE ALERTA CENTRADO ANTES DE LOS BOTONES -->
+        <div id="mensajeAlerta" class="alert hidden"></div>
+
+        <div class="button-group">
+          <button type="submit" id="btnGuardar" class="btn-success">Guardar Cambios</button>
+          <button type="button" class="btn-secondary" onclick="resetearVista()">Cancelar / Nueva Búsqueda</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <?!= include('Funciones.js'); ?>
+</body>
+</html>
